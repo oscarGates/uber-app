@@ -23,6 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void goToLogin() {
-        Intent intent = new Intent(RegisterActivity.this, LoginAc);
+        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 }
