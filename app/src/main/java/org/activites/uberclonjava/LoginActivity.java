@@ -2,11 +2,13 @@ package org.activites.uberclonjava;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import dmax.dialog.SpotsDialog;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,7 +19,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
 
 public class LoginActivity extends AppCompatActivity {
     Button mButtonLogin;
@@ -25,6 +26,9 @@ public class LoginActivity extends AppCompatActivity {
     TextInputEditText mTextInputPassword;
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
+    AlertDialog mAlertDialog;
+    Toolbar mToolBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +37,16 @@ public class LoginActivity extends AppCompatActivity {
         mTextInputEmail = findViewById(R.id.textInputEmail);
         mTextInputPassword = findViewById(R.id.textInputPassword);
         mButtonLogin = findViewById(R.id.btnLogin);
+        mToolBar = findViewById(R.id.toolBar);
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setTitle("Login");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        mAlertDialog = new SpotsDialog.Builder().setContext(LoginActivity.this)
+                .setMessage("Espere un momento").build();
         mButtonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +60,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = mTextInputPassword.getText().toString();
         if(!email.isEmpty() && !password.isEmpty()){
             if(password.length() >= 6){
+                mAlertDialog.show();
                 mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -58,9 +70,14 @@ public class LoginActivity extends AppCompatActivity {
                         }else{
                             Toast.makeText(LoginActivity.this, "El email o el password es incorrecto", Toast.LENGTH_SHORT).show();
                         }
+                        mAlertDialog.dismiss();
                     }
                 });
+            }else{
+                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show();
             }
+        }else{
+            Toast.makeText(this, "La contraseña y el email son obligatorios.", Toast.LENGTH_SHORT).show();
         }
     }
 }
