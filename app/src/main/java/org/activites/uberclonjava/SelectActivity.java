@@ -9,9 +9,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import org.activites.uberclonjava.includes.MyToolbar;
+
 public class SelectActivity extends AppCompatActivity {
 
-    Toolbar mToolBar;
     Button goToLogin;
     Button goToRegister;
 
@@ -19,10 +20,7 @@ public class SelectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
-        mToolBar = findViewById(R.id.toolBar);
-        setSupportActionBar(mToolBar);
-        getSupportActionBar().setTitle("Seleccione una opción");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        MyToolbar.show(this, "Seleccione una opcion", true);
 
 
         goToLogin = findViewById(R.id.btnGoToLogin);

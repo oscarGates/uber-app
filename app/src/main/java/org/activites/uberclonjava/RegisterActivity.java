@@ -2,7 +2,9 @@ package org.activites.uberclonjava;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,7 +20,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.activites.uberclonjava.includes.MyToolbar;
 import org.activites.uberclonjava.models.User;
+
+import dmax.dialog.SpotsDialog;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -30,6 +35,8 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText mTextInputEmail;
     TextInputEditText mTextInputPassword;
     TextInputEditText mTextInputUsername;
+    AlertDialog mAlertDialog;
+
 
 
     @Override
@@ -40,12 +47,15 @@ public class RegisterActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+       MyToolbar.show(this, "Registro de usuario", true);
+
         mButtonRegister = findViewById(R.id.btnRegister);
         mTextInputEmail = findViewById(R.id.textInputEmail);
         mTextInputPassword = findViewById(R.id.textInputPassword);
         mTextInputUsername = findViewById(R.id.textInputUsername);
         mAuth = FirebaseAuth.getInstance();
-
+        mAlertDialog = new SpotsDialog.Builder().setContext(RegisterActivity.this)
+                .setMessage("Espere un momento").build();
         mButtonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,11 +64,6 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         String selectedUser = mPref.getString("user", "");
-        Toast.makeText(this, "Selected user: " + selectedUser, Toast.LENGTH_SHORT).show();
-
-
-
-
     }
 
     private void registerUser() {
@@ -68,11 +73,14 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(!name.isEmpty() && !password.isEmpty() && !email.isEmpty()){
             if(password.length() >= 6){
+                mAlertDialog.show();
                 mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+                        mAlertDialog.hide();
                         if(task.isSuccessful()){
-                            saveUser(name, email);
+                            String id = mAuth.getCurrentUser().getUid();
+                            saveUser(id, name, email);
                         } else {
                             Toast.makeText(RegisterActivity.this, "No se pudo realizar el registro", Toast.LENGTH_SHORT).show();
                         }
@@ -86,13 +94,13 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void saveUser(String name, String email) {
+    private void saveUser(String id, String name, String email) {
         String selectedUser = mPref.getString("user", "");
         User user = new User();
         user.setEmail(email);
         user.setName(name);
         if(selectedUser.equals("driver")){
-            mDatabase.child("Users").child("Drivers").push().setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mDatabase.child("Users").child("Drivers").child(id).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){
@@ -103,7 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
         } else {
-            mDatabase.child("Users").child("Clients").push().setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            mDatabase.child("Users").child("Clients").child("Drivers").setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if(task.isSuccessful()){

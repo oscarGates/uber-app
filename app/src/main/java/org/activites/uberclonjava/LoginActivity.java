@@ -19,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.activites.uberclonjava.includes.MyToolbar;
+
 
 public class LoginActivity extends AppCompatActivity {
     Button mButtonLogin;
@@ -27,7 +29,6 @@ public class LoginActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     DatabaseReference mDatabase;
     AlertDialog mAlertDialog;
-    Toolbar mToolBar;
 
 
     @Override
@@ -37,10 +38,8 @@ public class LoginActivity extends AppCompatActivity {
         mTextInputEmail = findViewById(R.id.textInputEmail);
         mTextInputPassword = findViewById(R.id.textInputPassword);
         mButtonLogin = findViewById(R.id.btnLogin);
-        mToolBar = findViewById(R.id.toolBar);
-        setSupportActionBar(mToolBar);
-        getSupportActionBar().setTitle("Login");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        MyToolbar.show(this, "Login de usuario", true);
 
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();

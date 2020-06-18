@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LoginActivity" android:parentActivityName=".SelectActivity"></activity>
-        <activity android:name=".RegisterActivity" />
+        <activity android:name=".RegisterActivity" android:parentActivityName=".SelectActivity"/>
         <activity android:name=".SelectActivity" android:parentActivityName=".MainActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
